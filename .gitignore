@@ -1,15 +1,13 @@
-```
+```gitignore
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Export files
-backend/exports/
-
-# Logs
+# Logs and temp files
 *.log
+*.tmp
 
 # Environment
 .env
@@ -21,11 +19,21 @@ backend/exports/
 venv/
 node_modules/
 
+# Build artifacts
+dist/
+build/
+target/
+
 # Editors
 .vscode/
 .idea/
 
-# OS
-.DS_Store
-Thumbs.db
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# Testing
+.pytest_cache/
+.mypy_cache/
 ```
