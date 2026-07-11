@@ -1,113 +1,120 @@
-# AI Project Manager OS - Project Final
+# AI Project Manager OS
 
-Sistem manajemen proyek berbasis AI dengan arsitektur 3 Layer:
-- **Layer 1**: AI Project Manager OS (Management & Governance)
-- **Layer 2**: AI Specification Factory (Pembuat Spesifikasi)
-- **Layer 3**: AI Source Generator (Pembuat Source Code)
+**Version**: 2.0.0 (Python + Flask)  
+**Status**: Development  
 
-## Struktur Direktori
+## Overview
+
+AI Project Manager OS is a comprehensive platform for managing software development projects with AI assistance. It features a 3-layer architecture:
+
+- **Layer 1**: Project Manager OS (Dashboard, Chat, Memory, Git, Notifications)
+- **Layer 2**: Project Factory (Specification Document Generation)
+- **Layer 3**: Project Builder (Source Code Generation)
+
+## Technology Stack
+
+### Backend
+- Python 3.10+
+- Flask 3.0+
+- SQLAlchemy
+- SQLite (dev) / PostgreSQL (prod)
+
+### Frontend
+- HTML5, CSS3, JavaScript (ES6+)
+- Custom CSS with modern design system
+
+### AI Integration
+- OpenCode CLI
+- Claude Code CLI
+
+### Git Integration
+- GitPython library
+
+## Quick Start
+
+### Installation
+
+```bash
+# Install dependencies
+cd backend
+pip install -r requirements.txt
+
+# Initialize database
+python app.py
+
+# Start server
+# Server runs on http://localhost:5000
+```
+
+### Frontend
+
+Open `frontend/index.html` in a browser or serve it with a web server.
+
+## Project Structure
 
 ```
 project_final/
-├── backend/           # Flask REST API
+├── backend/
 │   ├── app/
-│   │   ├── models.py       # Database models
-│   │   └── routes/         # API endpoints
-│   ├── config.py      # Konfigurasi aplikasi
-│   ├── requirements.txt
-│   └── app.py         # Main application
-├── frontend/          # Dashboard UI
-│   └── index.html     # Single page application
-├── workspace/         # Workspace untuk proyek
-└── docs/             # Dokumentasi
+│   │   ├── models.py
+│   │   ├── routes/
+│   │   └── services/
+│   ├── config.py
+│   ├── app.py
+│   └── requirements.txt
+├── frontend/
+│   ├── index.html
+│   ├── css/styles.css
+│   └── js/app.js
+├── docs/           # Specification documents
+├── workspace/      # Project sandboxes
+├── source/         # Generated source code
+└── tests/          # Test files
 ```
-
-## Cara Menjalankan
-
-### 1. Backend
-
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
-
-Backend akan berjalan di `http://localhost:5000`
-
-### 2. Frontend
-
-Buka file `frontend/index.html` di browser atau serve dengan Python:
-
-```bash
-cd frontend
-python -m http.server 8080
-```
-
-Frontend akan berjalan di `http://localhost:8080`
 
 ## API Endpoints
 
 ### Projects
-- `GET /api/projects` - Get all projects
-- `POST /api/projects` - Create new project
-- `GET /api/projects/<id>` - Get project by ID
+- `GET /api/projects` - List all projects
+- `POST /api/projects` - Create project
+- `GET /api/projects/<id>` - Get project details
 - `PUT /api/projects/<id>` - Update project
 - `DELETE /api/projects/<id>` - Delete project
 
 ### Chats
-- `GET /api/chats?project_id=<id>` - Get chats for project
-- `POST /api/chats` - Create new chat
-- `GET /api/chats/<id>` - Get chat with messages
-- `POST /api/chats/<id>/messages` - Add message
-
-### Memory (Workspace Memory)
-- `GET /api/memory?project_id=<id>` - Get memory items
-- `POST /api/memory` - Create memory item
-- `PUT /api/memory/<id>` - Update memory
-- `DELETE /api/memory/<id>` - Delete memory
+- `GET /api/chats?project_id=<id>` - List chats
+- `POST /api/chats` - Create chat
+- `POST /api/chats/<id>/messages` - Send message
 
 ### Factory (Layer 2)
-- `GET /api/factory/queue` - Get factory queue
-- `POST /api/factory/job` - Create factory job
-- `PUT /api/factory/job/<id>` - Update job status
-- `GET /api/factory/project/<id>/status` - Get project factory status
+- `POST /api/factory/start` - Start specification generation
+- `GET /api/factory/jobs` - List factory jobs
+- `GET /api/factory/documents/<project_id>` - Get generated documents
 
 ### Builder (Layer 3)
-- `GET /api/builder/projects` - Get buildable projects
-- `POST /api/builder/build` - Create build job
-- `PUT /api/builder/build/<id>` - Update build status
-- `GET /api/builder/project/<id>/history` - Get build history
+- `POST /api/builder/start` - Start build
+- `GET /api/builder/jobs/<id>` - Get build status
 
 ### Timeline
-- `GET /api/timeline/project/<id>` - Get timeline events
-- `POST /api/timeline` - Create timeline event
+- `GET /api/timeline?project_id=<id>` - Get project timeline
 
 ### Notifications
 - `GET /api/notifications` - Get notifications
-- `POST /api/notifications` - Create notification
 - `PUT /api/notifications/<id>/read` - Mark as read
-- `PUT /api/notifications/read-all` - Mark all as read
 
-## Fitur Utama
+## Configuration
 
-1. **Project Management** - CRUD operasi untuk proyek
-2. **Chat System** - Chat sessions dengan AI Workspace Memory
-3. **Factory Queue** - Antrian pekerjaan Layer 2 dengan timestamp WIB
-4. **Builder** - Build management untuk Layer 3
-5. **Timeline** - Timeline events untuk tracking aktivitas
-6. **Notifications** - Sistem notifikasi terpusat
+Set environment variables in `.env` file:
 
-## Teknologi
+```bash
+SECRET_KEY=your-secret-key
+DATABASE_URL=sqlite:///project_manager.db
+AI_PROVIDER=opencode
+AI_MODEL=deepseek-v4-flash-free
+TELEGRAM_BOT_TOKEN=your-token
+TELEGRAM_CHAT_ID=your-chat-id
+```
 
-- **Backend**: Python Flask, SQLAlchemy (SQLite)
-- **Frontend**: HTML, CSS, Vanilla JavaScript
-- **Database**: SQLite (default), dapat diganti PostgreSQL/MySQL
-- **AI Runtime**: Siap diintegrasikan dengan OpenCode/Claude CLI
+## License
 
-## Status
-
-✅ Backend API berjalan dan berfungsi
-✅ Database models siap
-✅ Frontend dashboard dasar siap
-⏳ Integrasi AI runtime (OpenCode/Claude) - perlu implementasi tambahan
-⏳ Telegram notifications - perlu konfigurasi token
+MIT License
