@@ -1,1 +1,31 @@
-(project_final/1900log_report.md is a source/markdown file, so it should not be added to .gitignore)
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Export files
+backend/exports/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+```
