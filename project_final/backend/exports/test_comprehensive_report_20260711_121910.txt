@@ -1,0 +1,5 @@
+summary:
+  metric: cpu
+  value: 45
+details:
+  status: ok
