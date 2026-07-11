@@ -1,512 +1,61 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Project Manager OS</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .status-card { background: white; border-radius: 10px; padding: 30px; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
-        .status-ok { background: #00b894; }
-        .status-error { background: #d63031; }
-        h1 { margin-bottom: 10px; }
-        h2 { color: #2d3436; margin-bottom: 20px; }
-        .api-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; font-family: monospace; }
-        button { background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; margin: 5px; }
-        button:hover { background: #5568d3; }
-        .project-list { list-style: none; }
-        .project-item { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
-        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .badge-success { background: #00b894; color: white; }
-        .badge-warning { background: #fdcb6e; color: #2d3436; }
-        .badge-info { background: #74b9ff; color: white; }
-        .form-group { margin: 15px 0; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #ddd; }
-        .tab { padding: 10px 20px; cursor: pointer; border: none; background: none; font-size: 16px; }
-        .tab.active { border-bottom: 3px solid #667eea; color: #667eea; font-weight: bold; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .log-output { background: #2d3436; color: #00b894; padding: 20px; border-radius: 5px; font-family: monospace; max-height: 400px; overflow-y: auto; }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="header">
-        <h1>🤖 AI Project Manager OS</h1>
-        <p>Layer 1: Management | Layer 2: Factory | Layer 3: Builder</p>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div style="padding: 1rem 0; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; color: var(--primary-color);">AI PM OS</h2>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Project Manager</p>
+            </div>
+            
+            <nav>
+                <a href="#" class="nav-item active" data-view="dashboard">
+                    📊 Dashboard
+                </a>
+                <a href="#" class="nav-item" data-view="projects">
+                    📁 Projects
+                </a>
+                <a href="#" class="nav-item" data-view="chat">
+                    💬 AI Chat
+                </a>
+                <a href="#" class="nav-item" data-view="factory">
+                    🏭 Factory (L2)
+                </a>
+                <a href="#" class="nav-item" data-view="builder">
+                    🔨 Builder (L3)
+                </a>
+                <a href="#" class="nav-item" data-view="timeline">
+                    📅 Timeline
+                </a>
+                <a href="#" class="nav-item" data-view="notifications">
+                    🔔 Notifications
+                    <span id="notification-count" class="badge badge-danger" style="margin-left: auto;">0</span>
+                </a>
+            </nav>
+            
+            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="status-dot online"></span>
+                    <span style="font-size: 0.875rem;">System Online</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="view-content">
+                <!-- Dynamic content loaded by JavaScript -->
+            </div>
+        </main>
     </div>
     
-    <div class="container">
-        <!-- Status -->
-        <div class="status-card">
-            <h2><span class="status-indicator status-ok" id="backendStatus"></span>Backend Status</h2>
-            <div id="statusContent">Loading...</div>
-        </div>
-        
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('projects')">📁 Projects</button>
-            <button class="tab" onclick="showTab('factory')">🏭 Factory (Layer 2)</button>
-            <button class="tab" onclick="showTab('builder')">🔨 Builder (Layer 3)</button>
-            <button class="tab" onclick="showTab('timeline')">📈 Timeline</button>
-            <button class="tab" onclick="showTab('notifications')">🔔 Notifications</button>
-            <button class="tab" onclick="showTab('telegram')">💬 Telegram Config</button>
-        </div>
-        
-        <!-- Projects Tab -->
-        <div id="projects" class="tab-content active">
-            <div class="status-card">
-                <h2>Create New Project</h2>
-                <div class="form-group">
-                    <label>Project Name</label>
-                    <input type="text" id="projectName" placeholder="Enter project name">
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="projectDescription" rows="3" placeholder="Project description"></textarea>
-                </div>
-                <button onclick="createProject()">Create Project</button>
-            </div>
-            
-            <div class="status-card">
-                <h2>Project List</h2>
-                <ul class="project-list" id="projectList"></ul>
-            </div>
-        </div>
-        
-        <!-- Factory Tab -->
-        <div id="factory" class="tab-content">
-            <div class="status-card">
-                <h2>Factory Queue (Layer 2)</h2>
-                <button onclick="loadFactoryQueue()">Refresh Queue</button>
-                <div id="factoryQueue" style="margin-top: 20px;"></div>
-            </div>
-        </div>
-        
-        <!-- Builder Tab -->
-        <div id="builder" class="tab-content">
-            <div class="status-card">
-                <h2>Build Projects (Layer 3)</h2>
-                <button onclick="loadBuildableProjects()">Refresh Projects</button>
-                <div id="buildableProjects" style="margin-top: 20px;"></div>
-            </div>
-        </div>
-        
-        <!-- Timeline Tab -->
-        <div id="timeline" class="tab-content">
-            <div class="status-card">
-                <h2>Project Timeline</h2>
-                <select id="timelineProject" onchange="loadTimeline()" style="padding: 10px; margin: 10px 0;">
-                    <option value="">Select Project</option>
-                </select>
-                <div id="timelineEvents" style="margin-top: 20px;"></div>
-            </div>
-        </div>
-        
-        <!-- Notifications Tab -->
-        <div id="notifications" class="tab-content">
-            <div class="status-card">
-                <h2>Notifications</h2>
-                <button onclick="loadNotifications()">Refresh</button>
-                <button onclick="markAllRead()">Mark All Read</button>
-                <div id="notificationList" style="margin-top: 20px;"></div>
-            </div>
-        </div>
-        
-        <!-- Telegram Configuration Tab -->
-        <div id="telegram" class="tab-content">
-            <div class="status-card">
-                <h2>🔧 Telegram Configuration</h2>
-                <p style="margin-bottom: 20px; color: #666;">Configure your Telegram bot to receive notifications from AI Project Manager OS.</p>
-                
-                <div class="form-group">
-                    <label>Bot Token</label>
-                    <input type="text" id="telegramBotToken" placeholder="Enter your Telegram Bot Token (e.g., 123456789:ABCdefGHIjklMNOpqrsTUVwxyz)">
-                    <small style="color: #666;">Get your bot token from <a href="https://t.me/BotFather" target="_blank">@BotFather</a> on Telegram</small>
-                </div>
-                
-                <div class="form-group">
-                    <label>Chat ID</label>
-                    <input type="text" id="telegramChatId" placeholder="Enter your Chat ID (e.g., 123456789)">
-                    <small style="color: #666;">Your personal or group chat ID. Use /start in your bot then check updates to find your ID.</small>
-                </div>
-                
-                <button onclick="saveTelegramConfig()">Save Configuration</button>
-                <button onclick="testTelegramConnection()" style="background: #00b894;">Test Connection</button>
-                <button onclick="sendTestMessage()" style="background: #74b9ff;">Send Test Message</button>
-                
-                <div id="telegramStatus" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; display: none;"></div>
-            </div>
-            
-            <div class="status-card">
-                <h2>📋 Current Configuration</h2>
-                <button onclick="loadTelegramConfig()">Refresh Config</button>
-                <div id="currentConfig" style="margin-top: 20px;"></div>
-            </div>
-            
-            <div class="status-card">
-                <h2>📨 Recent Updates (Find Chat ID)</h2>
-                <p style="margin-bottom: 10px; color: #666;">Send a message to your bot, then click refresh to see updates and find your chat ID.</p>
-                <button onclick="getTelegramUpdates()">Get Updates</button>
-                <div id="telegramUpdates" style="margin-top: 20px;"></div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        const API_BASE = 'http://localhost:5000/api';
-        
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-            
-            if (tabId === 'factory') loadFactoryQueue();
-            if (tabId === 'builder') loadBuildableProjects();
-            if (tabId === 'notifications') loadNotifications();
-        }
-        
-        async function checkHealth() {
-            try {
-                const res = await fetch(`${API_BASE}/health`);
-                const data = await res.json();
-                document.getElementById('backendStatus').className = 'status-indicator status-ok';
-                document.getElementById('statusContent').innerHTML = `
-                    <p><strong>Status:</strong> ${data.status}</p>
-                    <p><strong>Message:</strong> ${data.message}</p>
-                    <div class="api-info">API Base URL: ${API_BASE}</div>
-                `;
-            } catch (error) {
-                document.getElementById('backendStatus').className = 'status-indicator status-error';
-                document.getElementById('statusContent').innerHTML = `<p style="color: red;">Backend is not responding: ${error.message}</p>`;
-            }
-        }
-        
-        async function loadProjects() {
-            try {
-                const res = await fetch(`${API_BASE}/projects`);
-                const data = await res.json();
-                const list = document.getElementById('projectList');
-                
-                if (data.projects.length === 0) {
-                    list.innerHTML = '<li>No projects yet. Create your first project!</li>';
-                    return;
-                }
-                
-                list.innerHTML = data.projects.map(p => `
-                    <li class="project-item">
-                        <div>
-                            <strong>${p.name}</strong> v${p.version}
-                            <br><small>${p.description || 'No description'}</small>
-                        </div>
-                        <div>
-                            <span class="badge badge-info">L2: ${p.layer2_status}</span>
-                            <span class="badge badge-info">L3: ${p.layer3_status}</span>
-                        </div>
-                    </li>
-                `).join('');
-                
-                // Update timeline project selector
-                const selector = document.getElementById('timelineProject');
-                selector.innerHTML = '<option value="">Select Project</option>' + 
-                    data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        }
-        
-        async function createProject() {
-            const name = document.getElementById('projectName').value;
-            const description = document.getElementById('projectDescription').value;
-            
-            if (!name) {
-                alert('Project name is required');
-                return;
-            }
-            
-            try {
-                const res = await fetch(`${API_BASE}/projects`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, description })
-                });
-                const data = await res.json();
-                alert(`Project "${data.project.name}" created successfully!`);
-                document.getElementById('projectName').value = '';
-                document.getElementById('projectDescription').value = '';
-                loadProjects();
-            } catch (error) {
-                alert('Error creating project: ' + error.message);
-            }
-        }
-        
-        async function loadFactoryQueue() {
-            try {
-                const res = await fetch(`${API_BASE}/factory/queue`);
-                const data = await res.json();
-                const container = document.getElementById('factoryQueue');
-                
-                if (data.queue.length === 0) {
-                    container.innerHTML = '<p>No factory jobs in queue.</p>';
-                    return;
-                }
-                
-                container.innerHTML = data.queue.map(job => `
-                    <div class="project-item">
-                        <div>
-                            <strong>${job.queue_id}</strong> - Stage: ${job.stage}
-                            <br><small>Project: ${job.project_id}</small>
-                        </div>
-                        <div>
-                            <span class="badge ${job.status === 'completed' ? 'badge-success' : job.status === 'failed' ? 'badge-error' : 'badge-warning'}">
-                                ${job.status}
-                            </span>
-                            <br><small>${job.created_at}</small>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading factory queue:', error);
-            }
-        }
-        
-        async function loadBuildableProjects() {
-            try {
-                const res = await fetch(`${API_BASE}/builder/projects`);
-                const data = await res.json();
-                const container = document.getElementById('buildableProjects');
-                
-                if (data.projects.length === 0) {
-                    container.innerHTML = '<p>No projects ready for build. Complete Layer 2 first.</p>';
-                    return;
-                }
-                
-                container.innerHTML = data.projects.map(item => `
-                    <div class="project-item">
-                        <div>
-                            <strong>${item.project.name}</strong>
-                            <br><small>Status: ${item.project.layer2_status}</small>
-                        </div>
-                        <div>
-                            ${item.ready_to_build ? 
-                                '<span class="badge badge-success">Ready to Build</span>' : 
-                                '<span class="badge badge-warning">Not Ready</span>'}
-                            <br>
-                            ${item.latest_build ? 
-                                `<small>Last build: ${item.latest_build.status}</small>` : 
-                                '<small>No builds yet</small>'}
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading buildable projects:', error);
-            }
-        }
-        
-        async function loadTimeline() {
-            const projectId = document.getElementById('timelineProject').value;
-            if (!projectId) return;
-            
-            try {
-                const res = await fetch(`${API_BASE}/timeline/project/${projectId}`);
-                const data = await res.json();
-                const container = document.getElementById('timelineEvents');
-                
-                if (data.timeline.length === 0) {
-                    container.innerHTML = '<p>No timeline events.</p>';
-                    return;
-                }
-                
-                container.innerHTML = data.timeline.map(event => `
-                    <div class="project-item">
-                        <div>
-                            <strong>${event.title}</strong>
-                            <br><small>Type: ${event.event_type} | ${event.created_at}</small>
-                            ${event.description ? `<br><small>${event.description}</small>` : ''}
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading timeline:', error);
-            }
-        }
-        
-        async function loadNotifications() {
-            try {
-                const res = await fetch(`${API_BASE}/notifications`);
-                const data = await res.json();
-                const container = document.getElementById('notificationList');
-                
-                if (data.notifications.length === 0) {
-                    container.innerHTML = '<p>No notifications.</p>';
-                    return;
-                }
-                
-                container.innerHTML = data.notifications.map(notif => `
-                    <div class="project-item" style="${notif.is_read ? 'opacity: 0.6;' : ''}">
-                        <div>
-                            <strong>${notif.title}</strong>
-                            <br><small>Type: ${notif.type} | ${notif.created_at}</small>
-                            <br><small>${notif.message}</small>
-                        </div>
-                        <div>
-                            ${!notif.is_read ? '<span class="badge badge-warning">Unread</span>' : ''}
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading notifications:', error);
-            }
-        }
-        
-        async function markAllRead() {
-            try {
-                await fetch(`${API_BASE}/notifications/read-all`, { method: 'PUT' });
-                loadNotifications();
-            } catch (error) {
-                console.error('Error marking notifications as read:', error);
-            }
-        }
-        
-        // Telegram Functions
-        function showTelegramStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('telegramStatus');
-            statusDiv.style.display = 'block';
-            statusDiv.innerHTML = `<p style="color: ${type === 'success' ? '#00b894' : type === 'error' ? '#d63031' : '#667eea'};">${message}</p>`;
-        }
-        
-        async function saveTelegramConfig() {
-            const botToken = document.getElementById('telegramBotToken').value.trim();
-            const chatId = document.getElementById('telegramChatId').value.trim();
-            
-            if (!botToken || !chatId) {
-                showTelegramStatus('Please enter both Bot Token and Chat ID', 'error');
-                return;
-            }
-            
-            try {
-                const res = await fetch(`${API_BASE}/telegram/config`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ bot_token: botToken, chat_id: chatId })
-                });
-                const data = await res.json();
-                
-                if (data.status === 'success') {
-                    showTelegramStatus('Configuration saved successfully!', 'success');
-                    loadTelegramConfig();
-                } else {
-                    showTelegramStatus(`Error: ${data.error}`, 'error');
-                }
-            } catch (error) {
-                showTelegramStatus(`Error saving configuration: ${error.message}`, 'error');
-            }
-        }
-        
-        async function testTelegramConnection() {
-            try {
-                const res = await fetch(`${API_BASE}/telegram/test`);
-                const data = await res.json();
-                
-                if (data.status === 'success') {
-                    showTelegramStatus(`✅ Connected to bot @${data.bot_username} (${data.bot_name})`, 'success');
-                } else {
-                    showTelegramStatus(`❌ Connection failed: ${data.error}`, 'error');
-                }
-            } catch (error) {
-                showTelegramStatus(`Error testing connection: ${error.message}`, 'error');
-            }
-        }
-        
-        async function sendTestMessage() {
-            try {
-                const res = await fetch(`${API_BASE}/telegram/send-test`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        message: `🧪 *Test Notification from AI Project Manager OS*\n\nThis is a test message sent at ${new Date().toLocaleString()}.\n\nIf you receive this, your Telegram configuration is working correctly!` 
-                    })
-                });
-                const data = await res.json();
-                
-                if (data.status === 'success') {
-                    showTelegramStatus(`✅ Test message sent successfully! (Message ID: ${data.message_id})`, 'success');
-                } else {
-                    showTelegramStatus(`❌ Failed to send: ${data.error}`, 'error');
-                }
-            } catch (error) {
-                showTelegramStatus(`Error sending test message: ${error.message}`, 'error');
-            }
-        }
-        
-        async function loadTelegramConfig() {
-            try {
-                const res = await fetch(`${API_BASE}/telegram/config`);
-                const data = await res.json();
-                const container = document.getElementById('currentConfig');
-                
-                container.innerHTML = `
-                    <div class="project-item">
-                        <div>
-                            <strong>Configuration Status:</strong> 
-                            <span class="badge ${data.configured ? 'badge-success' : 'badge-warning'}">
-                                ${data.configured ? 'Configured' : 'Not Configured'}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="project-item">
-                        <div>
-                            <strong>Bot Token Set:</strong> ${data.bot_token_set ? 'Yes' : 'No'}
-                            ${data.bot_token_preview ? `<br><small>Preview: ${data.bot_token_preview}</small>` : ''}
-                        </div>
-                    </div>
-                    <div class="project-item">
-                        <div>
-                            <strong>Chat ID:</strong> ${data.chat_id || 'Not set'}
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                document.getElementById('currentConfig').innerHTML = `<p style="color: red;">Error loading config: ${error.message}</p>`;
-            }
-        }
-        
-        async function getTelegramUpdates() {
-            try {
-                const res = await fetch(`${API_BASE}/telegram/updates?limit=10`);
-                const data = await res.json();
-                const container = document.getElementById('telegramUpdates');
-                
-                if (data.status === 'success' && data.updates.length > 0) {
-                    container.innerHTML = data.updates.map(update => `
-                        <div class="project-item" style="display: block;">
-                            <strong>Update ID:</strong> ${update.update_id}<br>
-                            ${update.message ? `
-                                <strong>From:</strong> ${update.message.from.first_name} (@${update.message.from.username || 'no username'})<br>
-                                <strong>Chat ID:</strong> ${update.message.chat.id}<br>
-                                <strong>Message:</strong> ${update.message.text || '(no text)'}<br>
-                                <small>Date: ${new Date(update.message.date * 1000).toLocaleString()}</small>
-                            ` : '<em>No message content</em>'}
-                        </div>
-                    `).join('');
-                } else {
-                    container.innerHTML = '<p>No recent updates. Send a message to your bot first.</p>';
-                }
-            } catch (error) {
-                document.getElementById('telegramUpdates').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-            }
-        }
-        
-        // Initialize
-        checkHealth();
-        loadProjects();
-        setInterval(checkHealth, 30000);
-    </script>
+    <script src="js/app.js"></script>
 </body>
 </html>

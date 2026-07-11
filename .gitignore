@@ -1,46 +1,30 @@
 ```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+
 # Dependencies
-node_modules/
+.venv/
+venv/
 
-# Build artifacts
-dist/
-build/
-*.min.js
-*.min.css
-*.bundle.js
+# Logs and temp files
+*.log
+*.tmp
+*.swp
 
-# Environment variables
+# Environment
 .env
 .env.local
-.env.*
+*.env.*
 
-# IDE specific
-.vscode/
-.idea/
-
-# OS generated
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
+.coverage
 
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Compressed archives
-*.zip
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.gz
-*.rar
-*.7z
+# Editors
+.vscode/
+.idea/
 ```
